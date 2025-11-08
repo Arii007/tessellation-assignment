@@ -6,83 +6,50 @@
 //
 function makeCube (subdivisions)  {
     
-    // My code makes sure that subdivisions are at least 1, to avoid any potential errors.
-    if (subdivisions < 1) subdivisions = 1;
-    // This line of code calculates the size of each small square based on the number of subdivisions.
-    var step = 1.0 / subdivisions;
+    // This function now uses a more streamlined approach to build the cube.
+    let step = 1.0 / subdivisions;
 
-    // This loop and the one inside it work together to create a grid on each face of the cube.
-    for (var i = 0; i < subdivisions; i++) {
-        for (var j = 0; j < subdivisions; j++) {
-            // My code calculates the starting x and y coordinates for each small square in the grid
-            var x = -0.5 + i * step;
-            var y = -0.5 + j * step;
+    // This loop iterates through all 6 faces of the cube.
+    for (let face = 0; face < 6; face++) {
+        // These nested loops create the grid for each face.
+        for (let i = 0; i < subdivisions; i++) {
+            for (let j = 0; j < subdivisions; j++) {
+                
+                // My code calculates the 2D coordinates for a small square.
+                let u = i * step - 0.5;
+                let v = j * step - 0.5;
+                let u1 = (i + 1) * step - 0.5;
+                let v1 = (j + 1) * step - 0.5;
 
-           
-            // My code here sets up the four corner points of a square on the front of the cube
-            var p1 = [x, y, 0.5];
-            var p2 = [x + step, y, 0.5];
-            var p3 = [x + step, y + step, 0.5];
-            var p4 = [x, y + step, 0.5];
-            // This line of code draws the first triangle to make the square.
-            addTriangle(p1[0], p1[1], p1[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
-            // This line of code draws the second triangle to complete the square.
-            addTriangle(p1[0], p1[1], p1[2], p3[0], p3[1], p3[2], p4[0], p4[1], p4[2]);
+                let p0, p1, p2, p3;
 
-            // Back face (z = -0.5) - note the reversed vertex order for CCW
-            // My code sets up the four corner points for a square on the back of the cube
-            p1 = [x, y, -0.5];
-            p2 = [x + step, y, -0.5];
-            p3 = [x + step, y + step, -0.5];
-            p4 = [x, y + step, -0.5];
-            // I'm drawing the triangles with a different vertex order to make sure the face points outwardj
-            addTriangle(p1[0], p1[1], p1[2], p3[0], p3[1], p3[2], p2[0], p2[1], p2[2]);
-            addTriangle(p1[0], p1[1], p1[2], p4[0], p4[1], p4[2], p3[0], p3[1], p3[2]);
-
-            // Right face (x = 0.5)
-            // This line calculates the z coordinate for squares on the side facesf
-            var z = -0.5 + i * step;
-            // My code sets up the four corner points for a square on the right sidef
-            p1 = [0.5, y, z];
-            p2 = [0.5, y, z + step];
-            p3 = [0.5, y + step, z + step];
-            p4 = [0.5, y + step, z];
-            // This code draws the two triangles for that squarefe
-            addTriangle(p1[0], p1[1], p1[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
-            addTriangle(p1[0], p1[1], p1[2], p3[0], p3[1], p3[2], p4[0], p4[1], p4[2]);
-            
-            // Left face (x = -0.5)
-            // My code sets up the four corner points for a square on the left sidef
-            p1 = [-0.5, y, z];
-            p2 = [-0.5, y, z + step];
-            p3 = [-0.5, y + step, z + step];
-            p4 = [-0.5, y + step, z];
-            // I'm again reversing the order of vertices so the face points in the correct outward direction
-            addTriangle(p1[0], p1[1], p1[2], p3[0], p3[1], p3[2], p2[0], p2[1], p2[2]);
-            addTriangle(p1[0], p1[1], p1[2], p4[0], p4[1], p4[2], p3[0], p3[1], p3[2]);
-
-            // Top face (y = 0.5)
-            // These lines calculate the coordinates for squares on the top and bottom faces
-            var x_top = -0.5 + i * step;
-            var z_top = -0.5 + j * step;
-            // My code sets up the four corner points for a square on the top face
-            p1 = [x_top, 0.5, z_top];
-            p2 = [x_top + step, 0.5, z_top];
-            p3 = [x_top + step, 0.5, z_top + step];
-            p4 = [x_top, 0.5, z_top + step];
-            // This code draws the top face's triangles, making sure they face upwards.
-            addTriangle(p1[0], p1[1], p1[2], p3[0], p3[1], p3[2], p2[0], p2[1], p2[2]);
-            addTriangle(p1[0], p1[1], p1[2], p4[0], p4[1], p4[2], p3[0], p3[1], p3[2]);
-
-            // Bottom face (y = -0.5)
-            // My code sets up the four corner points for a square on the bottom face
-            p1 = [x_top, -0.5, z_top];
-            p2 = [x_top + step, -0.5, z_top];
-            p3 = [x_top + step, -0.5, z_top + step];
-            p4 = [x_top, -0.5, z_top + step];
-            // This code draws the two triangles for the bottom face
-            addTriangle(p1[0], p1[1], p1[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
-            addTriangle(p1[0], p1[1], p1[2], p3[0], p3[1], p3[2], p4[0], p4[1], p4[2]);
+                // This logic correctly maps the 2D square to the proper 3D face of the cube.
+                if (face === 0) { // Front face (+z)
+                    p0 = [u, v, 0.5]; p1 = [u1, v, 0.5]; p2 = [u1, v1, 0.5]; p3 = [u, v1, 0.5];
+                    addTriangle(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2]);
+                    addTriangle(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
+                } else if (face === 1) { // Back face (-z)
+                    p0 = [u, v, -0.5]; p1 = [u1, v, -0.5]; p2 = [u1, v1, -0.5]; p3 = [u, v1, -0.5];
+                    addTriangle(p1[0], p1[1], p1[2], p0[0], p0[1], p0[2], p2[0], p2[1], p2[2]);
+                    addTriangle(p2[0], p2[1], p2[2], p0[0], p0[1], p0[2], p3[0], p3[1], p3[2]);
+                } else if (face === 2) { // Top face (+y)
+                    p0 = [u, 0.5, v]; p1 = [u1, 0.5, v]; p2 = [u1, 0.5, v1]; p3 = [u, 0.5, v1];
+                    addTriangle(p1[0], p1[1], p1[2], p0[0], p0[1], p0[2], p2[0], p2[1], p2[2]);
+                    addTriangle(p2[0], p2[1], p2[2], p0[0], p0[1], p0[2], p3[0], p3[1], p3[2]);
+                } else if (face === 3) { // Bottom face (-y)
+                    p0 = [u, -0.5, v]; p1 = [u1, -0.5, v]; p2 = [u1, -0.5, v1]; p3 = [u, -0.5, v1];
+                    addTriangle(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2]);
+                    addTriangle(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
+                } else if (face === 4) { // Right face (+x)
+                    p0 = [0.5, u, v]; p1 = [0.5, u1, v]; p2 = [0.5, u1, v1]; p3 = [0.5, u, v1];
+                    addTriangle(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2]);
+                    addTriangle(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
+                } else { // Left face (-x)
+                    p0 = [-0.5, u, v]; p1 = [-0.5, u1, v]; p2 = [-0.5, u1, v1]; p3 = [-0.5, u, v1];
+                    addTriangle(p1[0], p1[1], p1[2], p0[0], p0[1], p0[2], p2[0], p2[1], p2[2]);
+                    addTriangle(p2[0], p2[1], p2[2], p0[0], p0[1], p0[2], p3[0], p3[1], p3[2]);
+                }
+            }
         }
     }
 }
@@ -96,69 +63,43 @@ function makeCube (subdivisions)  {
 //heightdivision.
 //
 function makeCylinder (radialdivision,heightdivision){
-    // I'm setting a minimum number of divisions to make sure the cylinder looks right.
-    if (radialdivision < 3) radialdivision = 3;
-    if (heightdivision < 1) heightdivision = 1;
+    let radius = 0.5;
+    let heightStep = 1.0 / heightdivision;
+    let angleStep = 360.0 / radialdivision;
 
-    // Here, my code defines the basic properties of the cylinder.
-    var radius = 0.5;
-    var height = 1.0;
-    // This line figures out how big each slice of the circular base should be.
-    var angleStep = 360.0 / radialdivision;
+    for (let j = 0; j < heightdivision; j++) {
+        let y0 = -0.5 + j * heightStep;
+        let y1 = y0 + heightStep;
+        for (let i = 0; i < radialdivision; i++) {
+            let angle1 = radians(i * angleStep);
+            let angle2 = radians((i + 1) * angleStep);
 
-    // Top and Bottom Caps
-    // This loop builds the circular top and bottom caps of the cylinder.
-    for (var i = 0; i < radialdivision; i++) {
-        // I'm calculating the start and end angles for a single wedge of the circle.
-        var angle1 = radians(i * angleStep);
-        var angle2 = radians((i + 1) * angleStep);
+            let x1 = radius * Math.cos(angle1);
+            let z1 = radius * Math.sin(angle1);
+            let x2 = radius * Math.cos(angle2);
+            let z2 = radius * Math.sin(angle2);
 
-        // This part of the code finds the positions of the two points on the circle's edge
-        var x1 = radius * Math.cos(angle1);
-        var z1 = radius * Math.sin(angle1);
-        var x2 = radius * Math.cos(angle2);
-        var z2 = radius * Math.sin(angle2);
+            let p0 = [x1, y0, z1];
+            let p1 = [x2, y0, z2];
+            let p2 = [x2, y1, z2];
+            let p3 = [x1, y1, z1];
 
-        
-        // This line draws a triangle for the top cap, connecting the center to the edge
-        addTriangle(0, height / 2, 0, x2, height / 2, z2, x1, height / 2, z1);
-        // Bottom cap (y = -0.5)
-        // This line does the same for the bottom cap, making sure it faces down.
-        addTriangle(0, -height / 2, 0, x1, -height / 2, z1, x2, -height / 2, z2);
+            addTriangle(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2]);
+            addTriangle(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
+        }
     }
     
-    
-    // This line of code determines how tall each segment of the cylinder's side is
-    var heightStep = height / heightdivision;
-    // This loop goes around the cylinder to build its sides.
-    for (var i = 0; i < radialdivision; i++) {
-        // I'm calculating the angles for the vertical slice I'm abodut to draw
-        var angle1 = radians(i * angleStep);
-        var angle2 = radians((i + 1) * angleStep);
-
-        // This code gets the coordinates for the vertical eddges of the slice
-        var x1 = radius * Math.cos(angle1);
-        var z1 = radius * Math.sin(angle1);
-        var x2 = radius * Math.cos(angle2);
-        var z2 = radius * Math.sin(angle2);
-
-        // This inner loop builds the side panels from the bodttom to the top.
-        for (var j = 0; j < heightdivision; j++) {
-            // These lines calculate the y-positions for the bodttom and top of the panel.
-            var y_bottom = -height / 2 + j * heightStep;
-            var y_top = y_bottom + heightStep;
-
-            
-            // My code defines the four corner points of the rectangular panel here.
-            var p1 = [x1, y_bottom, z1];
-            var p2 = [x2, y_bottom, z2];
-            var p3 = [x2, y_top, z2];
-            var p4 = [x1, y_top, z1];
-
-            // I use these two lines to split the rectangular pdanel into two triangles.
-            addTriangle(p1[0], p1[1], p1[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
-            addTriangle(p1[0], p1[1], p1[2], p3[0], p3[1], p3[2], p4[0], p4[1], p4[2]);
-        }
+    for (let i = 0; i < radialdivision; i++) {
+        let angle1 = radians(i * angleStep);
+        let angle2 = radians((i + 1) * angleStep);
+        
+        let x1 = radius * Math.cos(angle1);
+        let z1 = radius * Math.sin(angle1);
+        let x2 = radius * Math.cos(angle2);
+        let z2 = radius * Math.sin(angle2);
+        
+        addTriangle(0, -0.5, 0, x2, -0.5, z2, x1, -0.5, z1);
+        addTriangle(0, 0.5, 0, x1, 0.5, z1, x2, 0.5, z2);
     }
 }
 
@@ -171,75 +112,51 @@ function makeCylinder (radialdivision,heightdivision){
 //given by heightdivision.
 //
 function makeCone (radialdivision, heightdivision) {
-    // I'm setting minimums here to make sure the cone shape is always valid
-    if (radialdivision < 3) radialdivision = 3;
-    if (heightdivision < 1) heightdivision = 1;
-
-    // This code sets up the basic size and shape of the cone
-    var radius = 0.5;
-    var height = 1.0;
-    var angleStep = 360.0 / radialdivision;
-    // My code defines the coordinates for the tip (apex) and the center of the base
-    var apex = [0, height / 2, 0];
-    var baseCenter = [0, -height / 2, 0];
-
-    // Base
-    // This loop builds the flat, circular bottom of the cone
-    for (var i = 0; i < radialdivision; i++) {
-        // My code is figuring out the angles for each pie-slice of the base
-        var angle1 = radians(i * angleStep);
-        var angle2 = radians((i + 1) * angleStep);
-
-        // These lines calculate the positions of the two points on the outer edge of the base
-        var x1 = radius * Math.cos(angle1);
-        var z1 = radius * Math.sin(angle1);
-        var x2 = radius * Math.cos(angle2);
-        var z2 = radius * Math.sin(angle2);
-
-        // This line of code draws one of the triangles thdat makes up the circular base
-        addTriangle(baseCenter[0], baseCenter[1], baseCenter[2], x1, baseCenter[1], z1, x2, baseCenter[1], z2);
-    }
+    let radius = 0.5;
+    let angleStep = 360.0 / radialdivision;
+    let heightStep = 1.0 / heightdivision;
     
-    // Sides
-    // This line calculates how tall each section of the cone's side should be
-    var heightStep = height / heightdivision;
-    // This loop goes around the cone to build the sloped sides.
-    for (var i = 0; i < radialdivision; i++) {
-        // My code finds the start and end angles for the current sided panel
-        var angle1 = radians(i * angleStep);
-        var angle2 = radians((i + 1) * angleStep);
+    for (let i = 0; i < radialdivision; i++) {
+        let angle1 = radians(i * angleStep);
+        let angle2 = radians((i + 1) * angleStep);
+        let x1 = radius * Math.cos(angle1);
+        let z1 = radius * Math.sin(angle1);
+        let x2 = radius * Math.cos(angle2);
+        let z2 = radius * Math.sin(angle2);
+        addTriangle(0, -0.5, 0, x2, -0.5, z2, x1, -0.5, z1);
+    }
 
-        // This inner loop builds the side panels in stadcks from bottom to top
-        for (var j = 0; j < heightdivision; j++) {
-            // These lines determine the y-coordinates for the bottom and top of the current panel
-            var y_bottom = -height / 2 + j * heightStep;
-            var y_top = y_bottom + heightStep;
-            
-            // This line of code is important: it calculates the radiuds at the bodttom of the panel, which gets smaller as we go up
-            var r_bottom = radius * ( (height/2 - y_bottom) / height );
-            // This line does the same for the top of the panel. This shrinking radius is what makes it a cone
-            var r_top = radius * ( (height/2 - y_top) / height );
+    for (let j = 0; j < heightdivision; j++) {
+        let y0 = -0.5 + j * heightStep;
+        let y1 = y0 + heightStep;
+        let r0 = radius * (1 - (j / heightdivision));
+        let r1 = radius * (1 - ((j + 1) / heightdivision));
 
-            // These lines calculate the actual 3D coordinates for the four cdorners of the side panel.
-            var x1_bottom = r_bottom * Math.cos(angle1);
-            var z1_bottom = r_bottom * Math.sin(angle1);
-            var x2_bottom = r_bottom * Math.cos(angle2);
-            var z2_bottom = r_bottom * Math.sin(angle2);
+        for (let i = 0; i < radialdivision; i++) {
+            let angle1 = radians(i * angleStep);
+            let angle2 = radians((i + 1) * angleStep);
             
-            var x1_top = r_top * Math.cos(angle1);
-            var z1_top = r_top * Math.sin(angle1);
-            var x2_top = r_top * Math.cos(angle2);
-            var z2_top = r_top * Math.sin(angle2);
+            let x1_0 = r0 * Math.cos(angle1);
+            let z1_0 = r0 * Math.sin(angle1);
+            let x2_0 = r0 * Math.cos(angle2);
+            let z2_0 = r0 * Math.sin(angle2);
             
-            // My code sets up the four corner points of the pandel here.
-            var p1 = [x1_bottom, y_bottom, z1_bottom];
-            var p2 = [x2_bottom, y_bottom, z2_bottom];
-            var p3 = [x2_top, y_top, z2_top];
-            var p4 = [x1_top, y_top, z1_top];
-            
-            // Finally, these two lines split the panel into two tr3iangles
-            addTriangle(p1[0], p1[1], p1[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
-            addTriangle(p1[0], p1[1], p1[2], p3[0], p3[1], p3[2], p4[0], p4[1], p4[2]);
+            let x1_1 = r1 * Math.cos(angle1);
+            let z1_1 = r1 * Math.sin(angle1);
+            let x2_1 = r1 * Math.cos(angle2);
+            let z2_1 = r1 * Math.sin(angle2);
+
+            let p0 = [x1_0, y0, z1_0];
+            let p1 = [x2_0, y0, z2_0];
+            let p2 = [x2_1, y1, z2_1];
+            let p3 = [x1_1, y1, z1_1];
+
+            if (j < heightdivision - 1) {
+                addTriangle(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], p2[0], p2[1], p2[2]);
+                addTriangle(p0[0], p0[1], p0[2], p2[0], p2[1], p2[2], p3[0], p3[1], p3[2]);
+            } else {
+                addTriangle(p0[0], p0[1], p0[2], p1[0], p1[1], p1[2], 0, 0.5, 0);
+            }
         }
     }
 }
@@ -253,61 +170,43 @@ function makeCone (radialdivision, heightdivision) {
 //recursive subdivision method).
 //
 function makeSphere (slices, stacks) {
-    // I'm making sure there are enough slices and stacks to make the sphere look round
-    if (slices < 3) slices = 3;
-    if (stacks < 2) stacks = 2;
-    
-    // My code sets the radius of the sphere here
-    var radius = 0.5;
+    const radius = 0.5;
+    let sphere_points = [];
 
-    // This outer loop goes from the top of the sphere to the bottom, stack by stack
-    for (var i = 0; i < stacks; i++) {
-        // These lines calculate the vertical angles for the top and bottom of the current stack
-        var phi1 = (i / stacks) * Math.PI;
-        var phi2 = ((i + 1) / stacks) * Math.PI;
+    // This part of my code generates all the vertex points for the sphere first.
+    for (let i = 0; i <= stacks; i++) {
+        const phi = i / stacks * Math.PI; // This is the vertical angle (latitude).
+        const y = radius * Math.cos(phi);
+        
+        for (let j = 0; j <= slices; j++) {
+            const theta = j / slices * 2 * Math.PI; // This is the horizontal angle (longitude).
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const z = radius * Math.sin(phi) * Math.sin(theta);
+            sphere_points.push(x, y, z);
+        }
+    }
 
-        // This inner loop goes around the sphere, creating the slices for the current stack
-        for (var j = 0; j < slices; j++) {
-            // These lines calculate the horizontal angles (longitude) for the sides of the current slice
-            var theta1 = (j / slices) * 2 * Math.PI;
-            var theta2 = ((j + 1) / slices) * 2 * Math.PI;
+    // Now, my code stitches the points together to form the triangles.
+    for (let i = 0; i < stacks; i++) {
+        for (let j = 0; j < slices; j++) {
+            // This code figures out the indices for the four corners of a quad.
+            const first = (i * (slices + 1)) + j;
+            const second = first + slices + 1;
 
+            const v1_idx = first * 3;
+            const v2_idx = (first + 1) * 3;
+            const v3_idx = second * 3;
+            const v4_idx = (second + 1) * 3;
+
+            // My code gets the actual 3D coordinates from the points array.
+            const v1 = [sphere_points[v1_idx], sphere_points[v1_idx+1], sphere_points[v1_idx+2]];
+            const v2 = [sphere_points[v2_idx], sphere_points[v2_idx+1], sphere_points[v2_idx+2]];
+            const v3 = [sphere_points[v3_idx], sphere_points[v3_idx+1], sphere_points[v3_idx+2]];
+            const v4 = [sphere_points[v4_idx], sphere_points[v4_idx+1], sphere_points[v4_idx+2]];
             
-            // This part of my code converts the spherical coordinates angles into 3D x, y, z coordinates for each of the four corners
-            var v1 = [
-                radius * Math.sin(phi1) * Math.cos(theta1),
-                radius * Math.cos(phi1),
-                radius * Math.sin(phi1) * Math.sin(theta1)
-            ];
-            var v2 = [
-                radius * Math.sin(phi1) * Math.cos(theta2),
-                radius * Math.cos(phi1),
-                radius * Math.sin(phi1) * Math.sin(theta2)
-            ];
-            var v3 = [
-                radius * Math.sin(phi2) * Math.cos(theta2),
-                radius * Math.cos(phi2),
-                radius * Math.sin(phi2) * Math.sin(theta2)
-            ];
-            var v4 = [
-                radius * Math.sin(phi2) * Math.cos(theta1),
-                radius * Math.cos(phi2),
-                radius * Math.sin(phi2) * Math.sin(theta1)
-            ];
-
-            
-            // This logic handles the top and bottom poles of the sphere, which are special cases
-            if (i === 0) { // Top pole cap
-                // My code creates a single triangle for each slice at the very top, forming a fan shape
-                addTriangle(v1[0], v1[1], v1[2], v4[0], v4[1], v4[2], v3[0], v3[1], v3[2]);
-            } else if (i === stacks - 1) { // Bottom pole cap
-                // My code does the same for the bottom pole.
-                addTriangle(v1[0], v1[1], v1[2], v2[0], v2[1], v2[2], v4[0], v4[1], v4[2]);
-            } else { 
-                // For all the middle parts of the sphere, my code splits the four-sided panel into two triangles
-                addTriangle(v1[0], v1[1], v1[2], v2[0], v2[1], v2[2], v3[0], v3[1], v3[2]);
-                addTriangle(v1[0], v1[1], v1[2], v3[0], v3[1], v3[2], v4[0], v4[1], v4[2]);
-            }
+            // These two lines create the two triangles that form the quad for this segment of the sphere.
+            addTriangle(v1[0], v1[1], v1[2], v3[0], v3[1], v3[2], v4[0], v4[1], v4[2]);
+            addTriangle(v1[0], v1[1], v1[2], v2[0], v2[1], v2[2], v3[0], v3[1], v3[2]);
         }
     }
 }
